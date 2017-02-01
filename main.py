@@ -4,7 +4,7 @@ from pygame import *
 
 pygame.init()
 
-scr_size = (width,height) = (600,400)
+scr_size = (width,height) = (480,380)
 FPS = 20
 black = (0,0,0)
 red = (255,0,0)
@@ -76,7 +76,7 @@ def load_sprite_sheet(
 
 class Davis(pygame.sprite.Sprite):
     def __init__(self,x,y):
-        self.images,self.rect = load_sprite_sheet('davis_0.bmp',10,7,-1,-1,-1)
+        self.images,self.rect = load_sprite_sheet('davis_0.bmp',10,7,70,70,-1)
         self.image = self.images[0]
         self.index = 0
 
@@ -84,7 +84,7 @@ class Davis(pygame.sprite.Sprite):
         self.walk_arr = [4,5,6,7,6,5]
         self.walk_arr_index = 0
         self.walk_blit_rate = 3
-        self.walk_speed = 3
+        self.walk_speed = 5
         self.direction = 1
 
         self.stand_arr = [0,1,2,3,2,1]
@@ -120,10 +120,63 @@ class Davis(pygame.sprite.Sprite):
 
         self.counter = (self.counter + 1)%10000000000
 
+
+class Background(pygame.sprite.Sprite):
+    def __init__(self,bgwidth,bgheight):
+        pygame.sprite.Sprite.__init__(self)
+        self.scroll = 0
+        self.scrollspeed = [5,5]
+        self.bgwidth = bgwidth
+        self.bgheight = bgheight
+        self.rightedge = width
+        self.bottomedge = height
+        self.fullterrain,self.fullterrainrect = load_image('bg1.jpg',int(bgwidth),int(bgheight))
+        self.fullterrainrect.left = 0
+        self.fullterrainrect.top = 0
+        self.fullterrainrect.width = width
+        self.fullterrainrect.height = height
+        self.image = pygame.Surface((width,height))
+        self.rect = pygame.Rect((0, 0, width, height))
+
+        self.image.blit(self.fullterrain,self.rect,self.fullterrainrect)
+        #colorkey = self.image.get_at((0,0))
+        #self.image.set_colorkey(colorkey,RLEACCEL)
+        #self.image = self.image.convert_alpha()
+
+    def update(self):
+        if self.scroll == 1 and self.rightedge <= self.bgwidth - self.scrollspeed[0]:
+            self.rightedge += self.scrollspeed[0]
+            self.fullterrainrect.left += self.scrollspeed[0]
+
+        elif self.scroll == -1 and self.rightedge >= width + self.scrollspeed[0]:
+            self.rightedge -= self.scrollspeed[0]
+            self.fullterrainrect.left -= self.scrollspeed[0]
+
+        elif self.scroll == 2 and self.bottomedge <= self.bgheight - self.scrollspeed[1]:
+            self.bottomedge += self.scrollspeed[1]
+            self.fullterrainrect.top += self.scrollspeed[1]
+
+        elif self.scroll == -2 and self.bottomedge >= height + self.scrollspeed[1]:
+            self.bottomedge -= self.scrollspeed[1]
+            self.fullterrainrect.top -= self.scrollspeed[1]
+
+        self.image = pygame.Surface((width,height))
+        self.rect = pygame.Rect((0, 0, width, height))
+        self.image.blit(self.fullterrain,self.rect,self.fullterrainrect)
+        #colorkey = self.image.get_at((0,0))
+        #self.image.set_colorkey(colorkey,RLEACCEL)
+        #self.image = self.image.convert_alpha()
+
+    def draw(self):
+        screen.blit(self.image,self.rect)
+
+
+
 def main():
     gameOver = False
 
     davis = Davis(20,50)
+    bg = Background(725,380)
     #sprites,sprite_rect = load_sprite_sheet('davis_0.bmp',10,7,-1,-1,-1)
 
     while not gameOver:
@@ -156,14 +209,28 @@ def main():
                     davis.movement = [0,0]
                     davis.isWalking = False
 
+        if davis.isWalking == True and davis.direction == 1 and davis.rect.right > width*9/10:
+            bg.scroll = 1
+        elif davis.isWalking == True and davis.direction == -1 and davis.rect.left < width*1/10:
+            bg.scroll = -1
+        else:
+            bg.scroll = 0
+
+
+        if bg.scroll != 0 and (bg.rightedge < bg.bgwidth - bg.scrollspeed[0] - 1 or bg.rightedge < width + 1):
+            davis.movement[0] = 0
+
+
+        bg.update()
         davis.update()
 
         screen.fill(red)
-
+        bg.draw()
         davis.draw()
 
         #screen.blit(sprites[7],sprite_rect)
-
+        #print (bg.bgwidth,bg.bgheight), bg.rightedge
+        print bg.scroll,davis.movement
         pygame.display.update()
         clock.tick(FPS)
 
