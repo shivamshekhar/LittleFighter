@@ -119,6 +119,17 @@ class Davis(pygame.sprite.Sprite):
             self.image = pygame.transform.flip(self.image,True,False)
 
         self.counter = (self.counter + 1)%10000000000
+        self.checkbounds()
+
+    def checkbounds(self):
+        if self.rect.left < 0:
+            self.rect.left = 0
+        if self.rect.right > width:
+            self.rect.right = width
+        if self.rect.top < int(height*0.25):
+            self.rect.top = int(height*0.25)
+        if self.rect.bottom > height:
+            self.rect.bottom = height
 
 
 class Background(pygame.sprite.Sprite):
@@ -175,7 +186,7 @@ class Background(pygame.sprite.Sprite):
 def main():
     gameOver = False
 
-    davis = Davis(20,50)
+    davis = Davis(width/2,height/2)
     bg = Background(725,380)
     #sprites,sprite_rect = load_sprite_sheet('davis_0.bmp',10,7,-1,-1,-1)
 
@@ -217,8 +228,11 @@ def main():
             bg.scroll = 0
 
 
-        if bg.scroll != 0 and (bg.rightedge < bg.bgwidth - bg.scrollspeed[0] - 1 or bg.rightedge < width + 1):
+        if bg.scroll != 0 and ((bg.rightedge < bg.bgwidth - bg.scrollspeed[0] and davis.direction == 1) or (bg.rightedge > width + bg.scrollspeed[0] and davis.direction == -1)):
             davis.movement[0] = 0
+
+        elif davis.isWalking == True and davis.movement == [0,0]:
+            davis.movement[0] = davis.direction*davis.walk_speed
 
 
         bg.update()
