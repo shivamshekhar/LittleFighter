@@ -77,6 +77,8 @@ def load_sprite_sheet(
 class Davis(pygame.sprite.Sprite):
     def __init__(self,x,y):
         self.images,self.rect = load_sprite_sheet('davis_0.bmp',10,7,70,70,-1)
+        self.images1,self.rect = load_sprite_sheet('davis_1.bmp',10,7,70,70,-1)
+        self.images2,self.rect = load_sprite_sheet('davis_2.bmp',10,7,70,70,-1)
         self.image = self.images[0]
         self.index = 0
 
@@ -91,10 +93,22 @@ class Davis(pygame.sprite.Sprite):
         self.stand_arr_index = 0
         self.stand_blit_rate = 4
 
+        self.isPunching = False
+        self.punch_arr = [10,11,12,13,14,15,16,17]
+        self.punch_arr_index = 0
+        self.punch_blit_rate = 2
+
+        self.isFiringBlast = False
+        self.firingBlast_arr = [0,1,2,3,4,5,6,7,8,9]
+        self.firingBlast_arr_index = 0
+        self.firingBlast_blit_rate = 2
+
         self.movement = [0,0]
 
         self.rect.left = x
         self.rect.top = y
+
+        self.sheet_number = 0
 
         self.counter = 0
 
@@ -105,16 +119,37 @@ class Davis(pygame.sprite.Sprite):
         if self.isWalking:
             if self.counter%self.walk_blit_rate == 0:
                 self.index = self.walk_arr[self.walk_arr_index]
-                self.walk_arr_index = (self.walk_arr_index + 1)%6
+                self.walk_arr_index = (self.walk_arr_index + 1)%len(self.walk_arr)
 
             self.rect = self.rect.move(self.movement)
+            self.sheet_number = 0
+
+
+        elif self.isPunching:
+            if self.counter%self.punch_blit_rate == 0:
+                self.index = self.punch_arr[self.punch_arr_index]
+                self.punch_arr_index = (self.punch_arr_index + 1)%len(self.punch_arr)
+            self.sheet_number = 0
+
+        elif self.isFiringBlast:
+            if self.counter%self.firingBlast_blit_rate == 0:
+                self.index = self.firingBlast_arr[self.firingBlast_arr_index]
+                self.firingBlast_arr_index = (self.firingBlast_arr_index + 1)%len(self.firingBlast_arr)
+            self.sheet_number = 2
 
         else:
             if self.counter%self.stand_blit_rate == 0:
                 self.index = self.stand_arr[self.stand_arr_index]
-                self.stand_arr_index = (self.stand_arr_index + 1)%6
+                self.stand_arr_index = (self.stand_arr_index + 1)%len(self.stand_arr)
+            self.sheet_number = 0
 
-        self.image = self.images[self.index]
+        if self.sheet_number == 0:
+            self.image = self.images[self.index]
+        elif self.sheet_number == 1:
+            self.image = self.images1[self.index]
+        elif self.sheet_number == 2:
+            self.image = self.images2[self.index]
+
         if self.direction < 0:
             self.image = pygame.transform.flip(self.image,True,False)
 
@@ -215,10 +250,24 @@ def main():
                     davis.movement[1] = davis.walk_speed
                     davis.isWalking = True
 
+                if event.key == pygame.K_a:
+                    davis.isPunching = True
+
+                if event.key == pygame.K_s:
+                    davis.isFiringBlast = True
+
             if event.type == pygame.KEYUP:
                 if event.key == pygame.K_LEFT or event.key == pygame.K_RIGHT or event.key == pygame.K_UP or event.key == pygame.K_DOWN:
                     davis.movement = [0,0]
                     davis.isWalking = False
+
+                if event.key == pygame.K_a:
+                    davis.isPunching = False
+                    davis.punch_arr_index = 1
+
+                if event.key == pygame.K_s:
+                    davis.isFiringBlast = False
+                    davis.firingBlast_arr_index = 4
 
         if davis.isWalking == True and davis.direction == 1 and davis.rect.right > width*9/10:
             bg.scroll = 1
