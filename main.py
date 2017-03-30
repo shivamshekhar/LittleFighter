@@ -4,6 +4,7 @@ from constants import *
 from davis import *
 from functions import *
 from background import *
+from energybar import *
 
 pygame.init()
 
@@ -14,7 +15,12 @@ def main():
 
     davis = Davis(width/2,height/2)
     bg = Background(725,380)
+    EB = EnergyBar(width/48,height/38,davis.mana,width/48)
+
     #sprites,sprite_rect = load_sprite_sheet('davis_0.bmp',10,7,-1,-1,-1)
+    fireBlast = pygame.sprite.Group()
+
+    DavisBall.containers = fireBlast
 
     while not gameOver:
         for event in pygame.event.get():
@@ -77,10 +83,14 @@ def main():
 
         bg.update()
         davis.update()
+        fireBlast.update()
+        EB.update(davis.mana)
 
         screen.fill(red)
         bg.draw()
+        EB.draw()
         davis.draw()
+        fireBlast.draw(screen)
 
         #screen.blit(sprites[7],sprite_rect)
         #print (bg.bgwidth,bg.bgheight), bg.rightedge

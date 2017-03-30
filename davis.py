@@ -31,6 +31,7 @@ class Davis(pygame.sprite.Sprite):
         self.firingBlast_arr = [0,1,2,3,4,5,6,7,8,9]
         self.firingBlast_arr_index = 0
         self.firingBlast_blit_rate = 2
+        self.mana = 100
 
         self.movement = [0,0]
 
@@ -60,10 +61,17 @@ class Davis(pygame.sprite.Sprite):
                 self.punch_arr_index = (self.punch_arr_index + 1)%len(self.punch_arr)
             self.sheet_number = 0
 
-        elif self.isFiringBlast:
+        elif self.isFiringBlast and self.mana > 0:
             if self.counter%self.firingBlast_blit_rate == 0:
                 self.index = self.firingBlast_arr[self.firingBlast_arr_index]
                 self.firingBlast_arr_index = (self.firingBlast_arr_index + 1)%len(self.firingBlast_arr)
+            #if self.counter%10 == 0:
+                if self.index == 3:
+                    DavisBall(self.rect.right, self.rect.centery + 5, self.direction)
+                    self.mana -= 5
+                elif self.index == 8:
+                    DavisBall(self.rect.right, self.rect.centery, self.direction)
+                    self.mana -= 5
             self.sheet_number = 2
 
         else:
@@ -82,6 +90,12 @@ class Davis(pygame.sprite.Sprite):
         if self.direction < 0:
             self.image = pygame.transform.flip(self.image,True,False)
 
+        if self.mana < 0:
+            self.mana = 0
+
+        if self.isFiringBlast == False and self.mana < 100:
+            self.mana += 1
+
         self.counter = (self.counter + 1)%10000000000
         self.checkbounds()
 
@@ -96,12 +110,28 @@ class Davis(pygame.sprite.Sprite):
             self.rect.bottom = height
 
 class DavisBall(pygame.sprite.Sprite):
-    def __init__(self,x,y):
+    def __init__(self,x,y,direction=1):
         pygame.sprite.Sprite.__init__(self,self.containers)
-        pass
+        self.images,self.rect = load_sprite_sheet('davis_ball.bmp',4,3,69,40,-1)
+        self.image = self.images[0]
+        self.index = 3
+        self.direction = direction
+
+        self.movement = [direction*10,0]
+        self.rect.centerx = x
+        self.rect.centery = y
+
+        self.counter = 0
 
     def draw(self):
-        pass
+        screen.blit(self.image,self.rect)
 
     def update(self):
-        pass
+        self.image = self.images[self.index]
+        if self.direction == -1:
+            self.image = pygame.transform.flip(self.image, True, False)
+
+        if self.rect.left > width:
+            self.kill()
+        self.rect = self.rect.move(self.movement)
+        self.counter = (self.counter + 1)%10000000000
