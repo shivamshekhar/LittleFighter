@@ -58,6 +58,12 @@ def main():
                 if event.key == pygame.K_d:
                     davis.isBlocking = True
 
+                if event.key == pygame.K_w:
+                    davis.isJumping = True
+                    davis.movement = [0,0]
+                    davis.temp_jump_base = davis.rect.bottom
+                    davis.movement[1] = -1*davis.jumpSpeed
+
             if event.type == pygame.KEYUP:
                 if event.key == pygame.K_LEFT or event.key == pygame.K_RIGHT or event.key == pygame.K_UP or event.key == pygame.K_DOWN:
                     davis.movement = [0,0]
@@ -110,6 +116,6 @@ def main():
 
         #screen.blit(sprites[7],sprite_rect)
         #print (bg.bgwidth,bg.bgheight), bg.rightedge
-        print bg.scroll,davis.movement
+        print davis.isJumping
         pygame.display.update()
         clock.tick(FPS)

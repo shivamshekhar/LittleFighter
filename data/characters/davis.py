@@ -38,6 +38,13 @@ class Davis(pygame.sprite.Sprite):
         self.block_arr_index = 0
         self.block_resist = 2
 
+        self.isJumping = False
+        self.jump_arr = [62]
+        self.jump_arr_index = 0
+        #self.jumpHeight = self.rect.height/2
+        self.jumpSpeed = 10
+        self.temp_jump_base = 0
+
         self.movement = [0,0]
 
         self.rect.left = x
@@ -71,18 +78,24 @@ class Davis(pygame.sprite.Sprite):
             self.index = self.block_arr[self.block_arr_index]
             self.sheet_number = 0
 
+        elif self.isJumping:
+            self.index = self.jump_arr[self.jump_arr_index]
+            self.sheet_number = 0
+            self.movement[1] = self.movement[1] + gravity
+            self.rect = self.rect.move(self.movement)
+
         elif self.isFiringBlast and self.mana > 0:
             if self.counter%self.firingBlast_blit_rate == 0:
                 self.index = self.firingBlast_arr[self.firingBlast_arr_index]
                 self.firingBlast_arr_index = (self.firingBlast_arr_index + 1)%len(self.firingBlast_arr)
-            #if self.counter%10 == 0:
+
                 if self.index == 3:
                     DavisBall(self.rect.centerx + self.direction*(self.rect.width/2), self.rect.centery + 5, self.direction)
                     self.mana -= 5
                 elif self.index == 8:
                     DavisBall(self.rect.centerx + self.direction*(self.rect.width/2), self.rect.centery, self.direction)
                     self.mana -= 5
-                    
+
             self.sheet_number = 2
 
         else:
@@ -123,6 +136,11 @@ class Davis(pygame.sprite.Sprite):
             self.rect.top = int(height*0.25)
         if self.rect.bottom > height:
             self.rect.bottom = height
+
+        if self.rect.bottom > self.temp_jump_base and self.isJumping == True:
+            self.rect.bottom = self.temp_jump_base
+            self.isJumping = False
+            self.movement = [0,0]
 
 class DavisBall(pygame.sprite.Sprite):
     def __init__(self,x,y,direction=1):
