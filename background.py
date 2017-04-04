@@ -3,7 +3,7 @@ from constants import *
 from functions import *
 
 class Background(pygame.sprite.Sprite):
-    def __init__(self,bgwidth,bgheight):
+    def __init__(self,bgwidth,bgheight,bgname):
         pygame.sprite.Sprite.__init__(self)
         self.scroll = 0
         self.scrollspeed = [5,5]
@@ -11,7 +11,7 @@ class Background(pygame.sprite.Sprite):
         self.bgheight = bgheight
         self.rightedge = width
         self.bottomedge = height
-        self.fullterrain,self.fullterrainrect = load_image('bg1.jpg',int(bgwidth),int(bgheight))
+        self.fullterrain,self.fullterrainrect = load_image(bgname,int(bgwidth),int(bgheight))
         self.fullterrainrect.left = 0
         self.fullterrainrect.top = 0
         self.fullterrainrect.width = width

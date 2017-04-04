@@ -93,7 +93,7 @@ class Davis(pygame.sprite.Sprite):
         if self.mana < 0:
             self.mana = 0
 
-        if self.isFiringBlast == False and self.mana < 100:
+        if self.isFiringBlast == False and self.mana < 100 and self.counter%4 == 0:
             self.mana += 1
 
         self.counter = (self.counter + 1)%10000000000

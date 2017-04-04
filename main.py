@@ -14,7 +14,7 @@ def main():
     gameOver = False
 
     davis = Davis(width/2,height/2)
-    bg = Background(725,380)
+    bg = Background(2900,380,'bg2.png')
     EB = EnergyBar(width/48,height/38,davis.mana,width/48)
 
     #sprites,sprite_rect = load_sprite_sheet('davis_0.bmp',10,7,-1,-1,-1)
