@@ -82,6 +82,7 @@ class Davis(pygame.sprite.Sprite):
                 elif self.index == 8:
                     DavisBall(self.rect.centerx + self.direction*(self.rect.width/2), self.rect.centery, self.direction)
                     self.mana -= 5
+                    
             self.sheet_number = 2
 
         else:
