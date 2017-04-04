@@ -60,7 +60,7 @@ def main():
 
                 if event.key == pygame.K_s:
                     davis.isFiringBlast = False
-                    davis.firingBlast_arr_index = 3
+                    davis.firingBlast_arr_index = 0
 
         if davis.isWalking == True and davis.direction == 1 and davis.rect.right > width*9/10:
             bg.scroll = 1
