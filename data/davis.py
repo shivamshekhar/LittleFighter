@@ -39,13 +39,14 @@ class Davis(pygame.sprite.Sprite):
         self.rect.top = y
 
         self.sheet_number = 0
-
+        self.health = 100
         self.counter = 0
 
     def draw(self):
         screen.blit(self.image,self.rect)
 
     def update(self):
+        """------------------------Checking player status--------------------------------"""
         if self.isWalking:
             if self.counter%self.walk_blit_rate == 0:
                 self.index = self.walk_arr[self.walk_arr_index]
@@ -67,10 +68,10 @@ class Davis(pygame.sprite.Sprite):
                 self.firingBlast_arr_index = (self.firingBlast_arr_index + 1)%len(self.firingBlast_arr)
             #if self.counter%10 == 0:
                 if self.index == 3:
-                    DavisBall(self.rect.right, self.rect.centery + 5, self.direction)
+                    DavisBall(self.rect.centerx + self.direction*(self.rect.width/2), self.rect.centery + 5, self.direction)
                     self.mana -= 5
                 elif self.index == 8:
-                    DavisBall(self.rect.right, self.rect.centery, self.direction)
+                    DavisBall(self.rect.centerx + self.direction*(self.rect.width/2), self.rect.centery, self.direction)
                     self.mana -= 5
             self.sheet_number = 2
 
@@ -80,12 +81,16 @@ class Davis(pygame.sprite.Sprite):
                 self.stand_arr_index = (self.stand_arr_index + 1)%len(self.stand_arr)
             self.sheet_number = 0
 
+        """------------------------Selecting sheet number--------------------------------"""
+
         if self.sheet_number == 0:
             self.image = self.images[self.index]
         elif self.sheet_number == 1:
             self.image = self.images1[self.index]
         elif self.sheet_number == 2:
             self.image = self.images2[self.index]
+
+        """-------------------------------Other updates----------------------------------"""
 
         if self.direction < 0:
             self.image = pygame.transform.flip(self.image,True,False)
