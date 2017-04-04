@@ -1,7 +1,7 @@
 import pygame
-from constants import *
+from ..constants import *
 from pygame import *
-from functions import *
+from ..functions import *
 
 class Davis(pygame.sprite.Sprite):
     def __init__(self,x,y):
@@ -15,7 +15,7 @@ class Davis(pygame.sprite.Sprite):
         self.walk_arr = [4,5,6,7,6,5]
         self.walk_arr_index = 0
         self.walk_blit_rate = 3
-        self.walk_speed = 5
+        self.walk_speed = 7
         self.direction = 1
 
         self.stand_arr = [0,1,2,3,2,1]
@@ -32,6 +32,11 @@ class Davis(pygame.sprite.Sprite):
         self.firingBlast_arr_index = 0
         self.firingBlast_blit_rate = 2
         self.mana = 100
+
+        self.isBlocking = False
+        self.block_arr = [56,57]
+        self.block_arr_index = 0
+        self.block_resist = 2
 
         self.movement = [0,0]
 
@@ -60,6 +65,10 @@ class Davis(pygame.sprite.Sprite):
             if self.counter%self.punch_blit_rate == 0:
                 self.index = self.punch_arr[self.punch_arr_index]
                 self.punch_arr_index = (self.punch_arr_index + 1)%len(self.punch_arr)
+            self.sheet_number = 0
+
+        elif self.isBlocking:
+            self.index = self.block_arr[self.block_arr_index]
             self.sheet_number = 0
 
         elif self.isFiringBlast and self.mana > 0:
